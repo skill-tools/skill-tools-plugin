@@ -1,0 +1,17 @@
+{
+  "description": "Auto-lint SKILL.md files after edits",
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/hooks/post-write-lint.sh",
+            "timeout": 60
+          }
+        ]
+      }
+    ]
+  }
+}
