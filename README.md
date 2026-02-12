@@ -9,7 +9,7 @@ The plugin's main feature is an auto-lint hook that runs after every SKILL.md ed
 Inside Claude Code:
 
 ```
-/install-plugin https://github.com/piyushvyas/skill-tools-plugin
+/install-plugin https://github.com/skill-tools/skill-tools-plugin
 ```
 
 For local development:

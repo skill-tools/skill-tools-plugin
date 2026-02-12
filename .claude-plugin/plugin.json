@@ -6,7 +6,7 @@
     "name": "Piyush Vyas",
     "email": "pie.vyas@gmail.com"
   },
-  "repository": "https://github.com/piyushvyas/skill-tools-plugin",
+  "repository": "https://github.com/skill-tools/skill-tools-plugin",
   "license": "MIT",
   "keywords": ["skills", "lint", "validate", "quality", "SKILL.md", "agent-skills"]
 }
