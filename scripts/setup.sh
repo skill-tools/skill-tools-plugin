@@ -6,7 +6,7 @@
 
 set -euo pipefail
 
-SKILL_TOOLS_VERSION="0.2.0"
+SKILL_TOOLS_VERSION="0.2.2"
 OK=true
 
 echo "Checking dependencies for skill-tools-plugin..."

@@ -12,7 +12,7 @@
 
 set -euo pipefail
 
-SKILL_TOOLS_VERSION="0.2.0"
+SKILL_TOOLS_VERSION="0.2.2"
 
 # --- dependency check ---------------------------------------------------
 for cmd in jq npx; do
@@ -71,7 +71,7 @@ TOTAL=$(echo "$RESULT" | jq '.diagnostics | length')
 SKILL_DIR=$(basename "$(dirname "$FILE_PATH")")
 
 if [[ "$TOTAL" == "0" ]]; then
-  SUMMARY="skill-tools lint: all 8 rules passed for ${SKILL_DIR}/SKILL.md"
+  SUMMARY="skill-tools lint: all 9 rules passed for ${SKILL_DIR}/SKILL.md"
 else
   MESSAGES=$(echo "$RESULT" | jq -r '.diagnostics[]? | "  [\(.severity)] \(.ruleId // "unknown"): \(.message)"')
   SUMMARY="skill-tools lint: ${ERRORS} error(s), ${WARNINGS} warning(s), ${INFOS} info(s) in ${SKILL_DIR}/SKILL.md

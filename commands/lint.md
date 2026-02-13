@@ -21,7 +21,7 @@ The user provided: $ARGUMENTS
 2. **Run lint.** For each resolved file:
 
 ```bash
-npx --yes skill-tools@0.2.0 lint "<resolved-path>"
+npx --yes skill-tools@0.2.2 lint "<resolved-path>"
 ```
 
 3. **Interpret the results.** The output shows a pass/fail checklist of these rules:
@@ -29,6 +29,7 @@ npx --yes skill-tools@0.2.0 lint "<resolved-path>"
 | Rule | What it checks |
 |:-----|:---------------|
 | Description specificity | No vague verbs like "manage" or "handle" |
+| Description length | Optimal length between 50–300 chars for metadata tier budget |
 | Trigger keywords | Has "Use when..." or action verbs so agents know when to invoke |
 | Progressive disclosure | Large files split reference material into subdirectories |
 | No hardcoded paths | Uses relative paths or env vars, not absolute paths |

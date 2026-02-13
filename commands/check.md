@@ -21,14 +21,14 @@ The user provided: $ARGUMENTS
 2. **Run check.** For each resolved file:
 
 ```bash
-npx --yes skill-tools@0.2.0 check "<resolved-path>"
+npx --yes skill-tools@0.2.2 check "<resolved-path>"
 ```
 
 3. **Present a layered summary.** The output covers three sections:
 
-**Validation** (16 spec checks) — Does the file have valid frontmatter, required fields (name, description), correct encoding, no binary content? If validation fails, lint and score results may be incomplete — those issues must be fixed first.
+**Validation** (20 spec checks) — Does the file have valid frontmatter, required fields (name, description), correct encoding, no binary content, name-matches-directory, compatibility and license field types? If validation fails, lint and score results may be incomplete — those issues must be fixed first.
 
-**Lint** (8 quality rules) — Description specificity, trigger keywords, progressive disclosure, no hardcoded paths, no secrets, examples, error handling, heading hierarchy. For any failures, explain why the rule matters and what to change.
+**Lint** (9 quality rules) — Description specificity, description length, trigger keywords, progressive disclosure, no hardcoded paths, no secrets, examples, error handling, heading hierarchy. For any failures, explain why the rule matters and what to change.
 
 **Score** (0–100 across 5 dimensions) — Description Quality (30pts), Instruction Clarity (25pts), Spec Compliance (20pts), Progressive Disclosure (15pts), Security (10pts).
 
