@@ -46,7 +46,7 @@ A PostToolUse hook watches for Write and Edit tool calls. When the target file i
 2. Builds a plain-text summary from the JSON
 3. Returns it as `additionalContext` so Claude sees the results immediately
 
-The hook is pinned to `skill-tools@0.2.0` to avoid supply chain risk. It silently skips if dependencies are missing — it never blocks edits.
+The hook is pinned to `skill-tools@0.2.2` to avoid supply chain risk. It silently skips if dependencies are missing — it never blocks edits.
 
 ## Skill: quality guidance
 
@@ -94,13 +94,14 @@ skill-tools-plugin/
 
 ## Version management
 
-The `skill-tools` npm package version is pinned in three places:
+The `skill-tools` npm package version is pinned in four places:
 
 - `hooks/post-write-lint.sh` — `SKILL_TOOLS_VERSION` variable
 - `scripts/setup.sh` — `SKILL_TOOLS_VERSION` variable
-- `commands/*.md` — version in the `npx` commands
+- `commands/check.md` — version in the `npx` command
+- `commands/lint.md` — version in the `npx` command
 
-To update, change all three. Search for the old version string to find them.
+All four must be updated together. Search for the old version string to find them.
 
 ## License
 
