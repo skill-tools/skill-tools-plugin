@@ -35,15 +35,6 @@ else
   OK=false
 fi
 
-# jq (used by the auto-lint hook)
-if command -v jq &>/dev/null; then
-  echo "  ✓ jq $(jq --version 2>/dev/null || echo '(version unknown)')"
-else
-  echo "  ✗ jq not found — the auto-lint hook needs it"
-  echo "    Install: brew install jq  (macOS) or apt install jq  (Linux)"
-  OK=false
-fi
-
 if [[ "$OK" != true ]]; then
   echo ""
   echo "Some dependencies are missing. Fix the items marked ✗ above."

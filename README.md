@@ -21,7 +21,7 @@ claude --plugin-dir /path/to/skill-tools-plugin
 ### Prerequisites
 
 - **Node.js 18+** and **npx**
-- **jq** — `brew install jq` (macOS) or `apt install jq` (Linux)
+- **macOS or Linux** (shell-based hooks; Windows is not currently supported)
 
 After installing, run the dependency checker to verify and pre-warm the cache:
 
