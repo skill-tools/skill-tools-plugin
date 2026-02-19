@@ -4,7 +4,7 @@ Claude Code plugin for auto-linting and checking SKILL.md files. Provides slash 
 
 ## Structure
 
-- `.claude-plugin/plugin.json` - Plugin metadata (version, name, description)
+- `.claude-plugin/plugin.json` - Plugin metadata (name, description, author, homepage)
 - `commands/check.md` - `/skill-tools:check` slash command
 - `commands/lint.md` - `/skill-tools:lint` slash command
 - `hooks/hooks.json` - Hook config (PostToolUse on Write|Edit)

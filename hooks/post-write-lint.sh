@@ -9,13 +9,14 @@
 #   - Validates FILE_PATH before passing to subprocess (defense in depth)
 #   - Silently exits on any missing dependency — never blocks edits
 #   - Pinned to a specific skill-tools version to avoid supply chain risk
+#   - Uses node (not jq) for JSON parsing — node is already required for npx
 
 set -euo pipefail
 
 SKILL_TOOLS_VERSION="0.2.2"
 
 # --- dependency check ---------------------------------------------------
-for cmd in jq npx; do
+for cmd in node npx; do
   if ! command -v "$cmd" &>/dev/null; then
     exit 0
   fi
@@ -23,7 +24,13 @@ done
 
 # --- read hook input -----------------------------------------------------
 INPUT=$(cat)
-FILE_PATH=$(echo "$INPUT" | jq -r '.tool_input.file_path // empty')
+FILE_PATH=$(node -e "
+  try {
+    const d = JSON.parse(process.argv[1]);
+    const p = d && d.tool_input && d.tool_input.file_path;
+    if (p) process.stdout.write(p);
+  } catch {}
+" -- "$INPUT" 2>/dev/null) || true
 
 # Only act on SKILL.md files
 if [[ -z "$FILE_PATH" ]]; then
@@ -50,41 +57,37 @@ if [[ -z "$LINT_JSON" ]]; then
   exit 0
 fi
 
-# Verify we got valid JSON back
-if ! echo "$LINT_JSON" | jq empty 2>/dev/null; then
-  exit 0
-fi
-
-# --- build a clean plain-text summary ------------------------------------
-# lint output is an array of results (one per file). We only lint one file.
-RESULT=$(echo "$LINT_JSON" | jq '.[0] // empty')
-
-if [[ -z "$RESULT" ]] || [[ "$RESULT" == "null" ]]; then
-  exit 0
-fi
-
-WARNINGS=$(echo "$RESULT" | jq '[.diagnostics[]? | select(.severity == "warning")] | length')
-INFOS=$(echo "$RESULT" | jq '[.diagnostics[]? | select(.severity == "info")] | length')
-ERRORS=$(echo "$RESULT" | jq '[.diagnostics[]? | select(.severity == "error")] | length')
-TOTAL=$(echo "$RESULT" | jq '.diagnostics | length')
-
+# --- build a clean plain-text summary and output JSON --------------------
 SKILL_DIR=$(basename "$(dirname "$FILE_PATH")")
 
-if [[ "$TOTAL" == "0" ]]; then
-  SUMMARY="skill-tools lint: all 9 rules passed for ${SKILL_DIR}/SKILL.md"
-else
-  MESSAGES=$(echo "$RESULT" | jq -r '.diagnostics[]? | "  [\(.severity)] \(.ruleId // "unknown"): \(.message)"')
-  SUMMARY="skill-tools lint: ${ERRORS} error(s), ${WARNINGS} warning(s), ${INFOS} info(s) in ${SKILL_DIR}/SKILL.md
-${MESSAGES}"
-fi
+LINT_JSON="$LINT_JSON" SKILL_DIR="$SKILL_DIR" node -e "
+  try {
+    const results = JSON.parse(process.env.LINT_JSON);
+    const r = results && results[0];
+    if (!r) process.exit(0);
 
-ESCAPED=$(echo "$SUMMARY" | jq -Rs .)
+    const diags = r.diagnostics || [];
+    const errors = diags.filter(d => d.severity === 'error').length;
+    const warnings = diags.filter(d => d.severity === 'warning').length;
+    const infos = diags.filter(d => d.severity === 'info').length;
+    const dir = process.env.SKILL_DIR;
 
-cat <<EOF
-{
-  "hookSpecificOutput": {
-    "hookEventName": "PostToolUse",
-    "additionalContext": ${ESCAPED}
-  }
-}
-EOF
+    let summary;
+    if (diags.length === 0) {
+      summary = 'skill-tools lint: all 9 rules passed for ' + dir + '/SKILL.md';
+    } else {
+      const msgs = diags.map(d =>
+        '  [' + d.severity + '] ' + (d.ruleId || 'unknown') + ': ' + d.message
+      ).join('\n');
+      summary = 'skill-tools lint: ' + errors + ' error(s), ' + warnings +
+        ' warning(s), ' + infos + ' info(s) in ' + dir + '/SKILL.md\n' + msgs;
+    }
+
+    console.log(JSON.stringify({
+      hookSpecificOutput: {
+        hookEventName: 'PostToolUse',
+        additionalContext: summary
+      }
+    }));
+  } catch {}
+" 2>/dev/null || true

@@ -1,12 +1,10 @@
 {
   "name": "skill-tools",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "Validate, lint, and score Agent Skills (SKILL.md) files. Catches quality issues in skills automatically as you write them.",
   "author": {
-    "name": "Piyush Vyas",
-    "email": "pie.vyas@gmail.com"
+    "name": "Piyush Vyas"
   },
-  "repository": "https://github.com/skill-tools/skill-tools-plugin",
-  "license": "MIT",
+  "homepage": "https://github.com/skill-tools/skill-tools-plugin",
   "keywords": ["skills", "lint", "validate", "quality", "SKILL.md", "agent-skills"]
 }

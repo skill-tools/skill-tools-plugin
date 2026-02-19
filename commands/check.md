@@ -18,7 +18,7 @@ The user provided: $ARGUMENTS
 
 1. **Resolve the target.** If the user gave a path, use it directly. If no path was provided, use Glob with the pattern `**/SKILL.md` to find all skill files in the project. Exclude any inside `node_modules`.
 
-2. **Run check.** For each resolved file:
+2. **Run check.** For each resolved file, run this exact command — do NOT substitute a local checkout or different version:
 
 ```bash
 npx --yes skill-tools@0.2.2 check "<resolved-path>"

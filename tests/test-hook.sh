@@ -39,6 +39,47 @@ run_hook() {
   echo "$1" | bash "$HOOK" 2>/dev/null || true
 }
 
+json_get() {
+  # Extract a value from JSON using node (no jq dependency).
+  # Usage: json_get '<json>' '<expression>'
+  # Expression is JS code with `d` as the parsed object, e.g. 'd.name'
+  node -e "
+    try {
+      const d = JSON.parse(process.argv[1]);
+      const v = $2;
+      if (v !== undefined && v !== null) process.stdout.write(String(v));
+    } catch {}
+  " -- "$1" 2>/dev/null || true
+}
+
+json_valid() {
+  # Check if a string is valid JSON. Returns 0 if valid, 1 if not.
+  node -e "
+    try { JSON.parse(process.argv[1]); } catch { process.exit(1); }
+  " -- "$1" 2>/dev/null
+}
+
+json_file_get() {
+  # Extract a value from a JSON file using node.
+  # Usage: json_file_get '<file>' '<expression>'
+  node -e "
+    const fs = require('fs');
+    try {
+      const d = JSON.parse(fs.readFileSync(process.argv[1], 'utf8'));
+      const v = $2;
+      if (v !== undefined && v !== null) process.stdout.write(String(v));
+    } catch {}
+  " -- "$1" 2>/dev/null || true
+}
+
+json_file_valid() {
+  # Check if a file contains valid JSON. Returns 0 if valid, 1 if not.
+  node -e "
+    const fs = require('fs');
+    try { JSON.parse(fs.readFileSync(process.argv[1], 'utf8')); } catch { process.exit(1); }
+  " -- "$1" 2>/dev/null
+}
+
 # --- setup ----------------------------------------------------------------
 
 TMPDIR=$(mktemp -d)
@@ -130,22 +171,22 @@ fi
 # --- test: valid SKILL.md produces JSON output ----------------------------
 # This test requires npx and skill-tools to be available.
 
-if command -v npx &>/dev/null && command -v jq &>/dev/null; then
+if command -v npx &>/dev/null && command -v node &>/dev/null; then
   OUTPUT=$(run_hook "{\"tool_input\": {\"file_path\": \"$TMPDIR/test-skill/SKILL.md\"}}")
   if [[ -n "$OUTPUT" ]]; then
     # Verify it's valid JSON
-    if echo "$OUTPUT" | jq empty 2>/dev/null; then
+    if json_valid "$OUTPUT"; then
       pass "valid SKILL.md: produces valid JSON"
 
       # Verify structure
-      HAS_CONTEXT=$(echo "$OUTPUT" | jq -r '.hookSpecificOutput.additionalContext // empty')
+      HAS_CONTEXT=$(json_get "$OUTPUT" 'd.hookSpecificOutput && d.hookSpecificOutput.additionalContext')
       if [[ -n "$HAS_CONTEXT" ]]; then
         pass "valid SKILL.md: has additionalContext"
       else
         fail "valid SKILL.md: missing additionalContext" "got: $OUTPUT"
       fi
 
-      HAS_EVENT=$(echo "$OUTPUT" | jq -r '.hookSpecificOutput.hookEventName // empty')
+      HAS_EVENT=$(json_get "$OUTPUT" 'd.hookSpecificOutput && d.hookSpecificOutput.hookEventName')
       if [[ "$HAS_EVENT" == "PostToolUse" ]]; then
         pass "valid SKILL.md: hookEventName is PostToolUse"
       else
@@ -159,12 +200,12 @@ if command -v npx &>/dev/null && command -v jq &>/dev/null; then
     echo "  ● valid SKILL.md: skipped (skill-tools not cached, npx may need to download)"
   fi
 else
-  echo "  ● integration tests skipped (npx or jq not available)"
+  echo "  ● integration tests skipped (npx or node not available)"
 fi
 
 # --- test: hooks.json is valid JSON ---------------------------------------
 
-if jq empty "$PLUGIN_ROOT/hooks/hooks.json" 2>/dev/null; then
+if json_file_valid "$PLUGIN_ROOT/hooks/hooks.json"; then
   pass "hooks.json: valid JSON"
 else
   fail "hooks.json: invalid JSON"
@@ -172,14 +213,14 @@ fi
 
 # --- test: hooks.json has correct structure --------------------------------
 
-MATCHER=$(jq -r '.hooks.PostToolUse[0].matcher // empty' "$PLUGIN_ROOT/hooks/hooks.json")
+MATCHER=$(json_file_get "$PLUGIN_ROOT/hooks/hooks.json" 'd.hooks.PostToolUse[0].matcher')
 if [[ "$MATCHER" == "Write|Edit" ]]; then
   pass "hooks.json: matcher is Write|Edit"
 else
   fail "hooks.json: wrong matcher" "expected Write|Edit, got: $MATCHER"
 fi
 
-TIMEOUT=$(jq -r '.hooks.PostToolUse[0].hooks[0].timeout // empty' "$PLUGIN_ROOT/hooks/hooks.json")
+TIMEOUT=$(json_file_get "$PLUGIN_ROOT/hooks/hooks.json" 'd.hooks.PostToolUse[0].hooks[0].timeout')
 if [[ "$TIMEOUT" -ge 30 ]]; then
   pass "hooks.json: timeout is >= 30s ($TIMEOUT)"
 else
@@ -188,24 +229,24 @@ fi
 
 # --- test: plugin.json is valid -------------------------------------------
 
-if jq empty "$PLUGIN_ROOT/.claude-plugin/plugin.json" 2>/dev/null; then
+if json_file_valid "$PLUGIN_ROOT/.claude-plugin/plugin.json"; then
   pass "plugin.json: valid JSON"
 else
   fail "plugin.json: invalid JSON"
 fi
 
-PLUGIN_NAME=$(jq -r '.name // empty' "$PLUGIN_ROOT/.claude-plugin/plugin.json")
+PLUGIN_NAME=$(json_file_get "$PLUGIN_ROOT/.claude-plugin/plugin.json" 'd.name')
 if [[ -n "$PLUGIN_NAME" ]]; then
   pass "plugin.json: has name field ($PLUGIN_NAME)"
 else
   fail "plugin.json: missing name"
 fi
 
-PLUGIN_VERSION=$(jq -r '.version // empty' "$PLUGIN_ROOT/.claude-plugin/plugin.json")
-if [[ "$PLUGIN_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-  pass "plugin.json: valid semver ($PLUGIN_VERSION)"
+PLUGIN_DESC=$(json_file_get "$PLUGIN_ROOT/.claude-plugin/plugin.json" 'd.description')
+if [[ -n "$PLUGIN_DESC" ]]; then
+  pass "plugin.json: has description field"
 else
-  fail "plugin.json: missing or invalid version" "got: $PLUGIN_VERSION"
+  fail "plugin.json: missing description"
 fi
 
 # --- test: hook script is executable --------------------------------------
