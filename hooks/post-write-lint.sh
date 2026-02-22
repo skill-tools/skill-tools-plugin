@@ -74,7 +74,7 @@ LINT_JSON="$LINT_JSON" SKILL_DIR="$SKILL_DIR" node -e "
 
     let summary;
     if (diags.length === 0) {
-      summary = 'skill-tools lint: all 9 rules passed for ' + dir + '/SKILL.md';
+      summary = 'skill-tools lint: all rules passed for ' + dir + '/SKILL.md';
     } else {
       const msgs = diags.map(d =>
         '  [' + d.severity + '] ' + (d.ruleId || 'unknown') + ': ' + d.message

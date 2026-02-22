@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.2.0 — 2026-02-20
+
+### Changed
+- Replace jq with Node.js for all JSON parsing in hook and tests — eliminates the jq dependency (node is already required for npx)
+- Remove jq check from setup.sh dependency checker
+- Clean up plugin.json for marketplace submission: add homepage field, add version field (CLI validator recommends it)
+- Strengthen command instructions to prevent local repo substitution
+
+### Added
+- Submitted to claude-plugins-official marketplace
+
 ## 0.1.1 — 2026-02-13
 
 ### Changed
