@@ -107,16 +107,16 @@ Run the quality tools to catch issues before they bite you:
 
 ```bash
 # Quick spec check — does the file parse correctly?
-npx --yes skill-tools@latest validate ./my-skill/SKILL.md
+npx --yes skill-tools@0.2.2 validate ./my-skill/SKILL.md
 
 # Quality lint — description, examples, error handling, headings
-npx --yes skill-tools@latest lint ./my-skill/SKILL.md
+npx --yes skill-tools@0.2.2 lint ./my-skill/SKILL.md
 
 # Full picture — validate + lint + score in one pass
-npx --yes skill-tools@latest check ./my-skill/SKILL.md
+npx --yes skill-tools@0.2.2 check ./my-skill/SKILL.md
 ```
 
-Or use the slash commands: `/skill-tools:validate`, `/skill-tools:lint`, `/skill-tools:score`, `/skill-tools:check`.
+Or use the slash commands: `/skill-tools:lint`, `/skill-tools:check`.
 
 ## Common Fixes
 
