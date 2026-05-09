@@ -28,7 +28,7 @@ npx --yes skill-tools@0.2.2 check "<resolved-path>"
 
 **Validation** (20 spec checks) — Does the file have valid frontmatter, required fields (name, description), correct encoding, no binary content, name-matches-directory, compatibility and license field types? If validation fails, lint and score results may be incomplete — those issues must be fixed first.
 
-**Lint** (9 quality rules) — Description specificity, description length, trigger keywords, progressive disclosure, no hardcoded paths, no secrets, examples, error handling, heading hierarchy. For any failures, explain why the rule matters and what to change.
+**Lint** (10 quality rules) — Description specificity, description length, trigger keywords, progressive disclosure, no hardcoded paths, no secrets, examples, error handling, heading hierarchy, and section-count optimality. For any failures, explain why the rule matters and what to change.
 
 **Score** (0–100 across 5 dimensions) — Description Quality (30pts), Instruction Clarity (25pts), Spec Compliance (20pts), Progressive Disclosure (15pts), Security (10pts).
 

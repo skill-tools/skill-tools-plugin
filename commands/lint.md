@@ -37,6 +37,7 @@ npx --yes skill-tools@0.2.2 lint "<resolved-path>"
 | Examples | At least one code block or numbered steps |
 | Error handling | Guidance on failures, retries, or troubleshooting |
 | Heading hierarchy | No skipped heading levels (e.g., H1 followed by H3) |
+| Section count | Very sparse or excessively fragmented section structure that hurts scanability |
 
 4. **Give actionable advice.** For each failing rule, explain *why* it matters (not just that it failed) and suggest a concrete fix the user can make right now. Prioritize warnings over info items.
 
